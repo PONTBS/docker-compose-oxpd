@@ -32,8 +32,8 @@ services:
     networks:
       - backend
     ports:
-      - 8080:80/tcp
-      - 8443:443/tcp
+      - 9080:80/tcp
+      - 9443:443/tcp
 
   # data service
   redis:
