@@ -1,0 +1,202 @@
+[1m
+ === Building Webapp Image === [0m
+Sending build context to Docker daemon  5.671MB
+Step 1/7 : FROM node:8
+ ---> 6a23819b932c
+Step 2/7 : WORKDIR /usr/src/app
+ ---> Using cache
+ ---> 9384370e9b2e
+Step 3/7 : COPY package*.json ./
+ ---> Using cache
+ ---> 30d1937517cd
+Step 4/7 : RUN npm install
+ ---> Using cache
+ ---> 958c54b849b5
+Step 5/7 : COPY . .
+ ---> af8913c9f333
+Step 6/7 : EXPOSE 9000
+ ---> Running in 00a575690433
+Removing intermediate container 00a575690433
+ ---> 9d8d489dd4b9
+Step 7/7 : CMD ["npm", "start"]
+ ---> Running in 6eaad8471158
+Removing intermediate container 6eaad8471158
+ ---> 93922b355a60
+Successfully built 93922b355a60
+Successfully tagged local/oxpd-web:latest
+[1m
+ === Running Maven Build For Proxy === [0m
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] -----------------< com.hp.ipg.roam.gateway:GatewayApp >-----------------
+[INFO] Building GatewayApp 1.1.0-SNAPSHOT
+[INFO] --------------------------------[ war ]---------------------------------
+[INFO] 
+[INFO] --- maven-clean-plugin:3.0.0:clean (default-clean) @ GatewayApp ---
+[INFO] Deleting /home/timm/git/roam-embedded-proxy/GatewayApp/target
+[INFO] 
+[INFO] --- maven-resources-plugin:3.0.2:resources (default-resources) @ GatewayApp ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Copying 2 resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.7.0:compile (default-compile) @ GatewayApp ---
+[INFO] Changes detected - recompiling the module!
+[INFO] Compiling 10 source files to /home/timm/git/roam-embedded-proxy/GatewayApp/target/classes
+[INFO] /home/timm/git/roam-embedded-proxy/GatewayApp/src/main/java/com/hp/ipg/roam/roamembedded/config/RedisConfig.java: /home/timm/git/roam-embedded-proxy/GatewayApp/src/main/java/com/hp/ipg/roam/roamembedded/config/RedisConfig.java uses or overrides a deprecated API.
+[INFO] /home/timm/git/roam-embedded-proxy/GatewayApp/src/main/java/com/hp/ipg/roam/roamembedded/config/RedisConfig.java: Recompile with -Xlint:deprecation for details.
+[INFO] /home/timm/git/roam-embedded-proxy/GatewayApp/src/main/java/com/hp/ipg/roam/roamembedded/controllers/OxpdController.java: /home/timm/git/roam-embedded-proxy/GatewayApp/src/main/java/com/hp/ipg/roam/roamembedded/controllers/OxpdController.java uses unchecked or unsafe operations.
+[INFO] /home/timm/git/roam-embedded-proxy/GatewayApp/src/main/java/com/hp/ipg/roam/roamembedded/controllers/OxpdController.java: Recompile with -Xlint:unchecked for details.
+[INFO] 
+[INFO] --- maven-resources-plugin:3.0.2:testResources (default-testResources) @ GatewayApp ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] skip non existing resourceDirectory /home/timm/git/roam-embedded-proxy/GatewayApp/src/test/resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.7.0:testCompile (default-testCompile) @ GatewayApp ---
+[INFO] Changes detected - recompiling the module!
+[INFO] Compiling 3 source files to /home/timm/git/roam-embedded-proxy/GatewayApp/target/test-classes
+[INFO] 
+[INFO] --- maven-surefire-plugin:2.21.0:test (default-test) @ GatewayApp ---
+[INFO] Tests are skipped.
+[INFO] 
+[INFO] --- maven-war-plugin:3.1.0:war (default-war) @ GatewayApp ---
+[INFO] Packaging webapp
+[INFO] Assembling webapp [GatewayApp] in [/home/timm/git/roam-embedded-proxy/GatewayApp/target/GatewayApp-1.1.0-SNAPSHOT]
+[INFO] Processing war project
+[INFO] Webapp assembled in [81 msecs]
+[INFO] Building war: /home/timm/git/roam-embedded-proxy/GatewayApp/target/GatewayApp-1.1.0-SNAPSHOT.war
+[INFO] 
+[INFO] --- spring-boot-maven-plugin:2.0.7.RELEASE:repackage (default) @ GatewayApp ---
+[INFO] 
+[INFO] --- maven-install-plugin:2.5.2:install (default-install) @ GatewayApp ---
+[INFO] Installing /home/timm/git/roam-embedded-proxy/GatewayApp/target/GatewayApp-1.1.0-SNAPSHOT.war to /home/timm/.m2/repository/com/hp/ipg/roam/gateway/GatewayApp/1.1.0-SNAPSHOT/GatewayApp-1.1.0-SNAPSHOT.war
+[INFO] Installing /home/timm/git/roam-embedded-proxy/GatewayApp/pom.xml to /home/timm/.m2/repository/com/hp/ipg/roam/gateway/GatewayApp/1.1.0-SNAPSHOT/GatewayApp-1.1.0-SNAPSHOT.pom
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  5.010 s
+[INFO] Finished at: 2019-03-07T14:37:07-05:00
+[INFO] ------------------------------------------------------------------------
+[1m
+ === Building Proxy Image === [0m
+Sending build context to Docker daemon  112.2MB
+Step 1/5 : FROM openjdk:8-jdk-alpine
+ ---> 792ff45a2a17
+Step 2/5 : VOLUME /tmp
+ ---> Using cache
+ ---> b4f9970b9d12
+Step 3/5 : ARG JAR_FILE
+ ---> Using cache
+ ---> 7a6565cd27f4
+Step 4/5 : COPY target/GatewayApp-*.war app.jar
+ ---> b90a223e8b0c
+Step 5/5 : ENTRYPOINT ["java","-jar","/app.jar"]
+ ---> Running in 8f5184d3750c
+Removing intermediate container 8f5184d3750c
+ ---> 82d0b6bd4fd7
+Successfully built 82d0b6bd4fd7
+Successfully tagged local/oxpd-proxy:latest
+[1m
+ === Starting Containers === [0m
+Attaching to redis, proxy, web
+[33mproxy    |[0m 2019-03-07 19:37:28.228  INFO 1 --- [           main] s.c.a.AnnotationConfigApplicationContext : Refreshing org.springframework.context.annotation.AnnotationConfigApplicationContext@47fd17e3: startup date [Thu Mar 07 19:37:28 GMT 2019]; root of context hierarchy
+[33mproxy    |[0m 2019-03-07 19:37:28.493  INFO 1 --- [           main] f.a.AutowiredAnnotationBeanPostProcessor : JSR-330 'javax.inject.Inject' annotation found and supported for autowiring
+[33mproxy    |[0m 2019-03-07 19:37:28.533  INFO 1 --- [           main] trationDelegate$BeanPostProcessorChecker : Bean 'configurationPropertiesRebinderAutoConfiguration' of type [org.springframework.cloud.autoconfigure.ConfigurationPropertiesRebinderAutoConfiguration$$EnhancerBySpringCGLIB$$9cc787e7] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+[33mproxy    |[0m 
+[33mproxy    |[0m   .   ____          _            __ _ _
+[33mproxy    |[0m  /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+[33mproxy    |[0m ( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+[33mproxy    |[0m  \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+[33mproxy    |[0m   '  |____| .__|_| |_|_| |_\__, | / / / /
+[33mproxy    |[0m  =========|_|==============|___/=/_/_/_/
+[33mproxy    |[0m  :: Spring Boot ::        (v2.0.7.RELEASE)
+[33mproxy    |[0m 
+[33mproxy    |[0m 2019-03-07 19:37:28.784  INFO 1 --- [           main] c.h.i.r.r.RoamGatewayApplication         : The following profiles are active: pon-local
+[33mproxy    |[0m 2019-03-07 19:37:28.804  INFO 1 --- [           main] ConfigServletWebServerApplicationContext : Refreshing org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext@27a8c74e: startup date [Thu Mar 07 19:37:28 GMT 2019]; parent: org.springframework.context.annotation.AnnotationConfigApplicationContext@47fd17e3
+[33mproxy    |[0m 2019-03-07 19:37:29.481  INFO 1 --- [           main] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode!
+[33mproxy    |[0m 2019-03-07 19:37:29.556  INFO 1 --- [           main] o.s.b.f.s.DefaultListableBeanFactory     : Overriding bean definition for bean 'counterFactory' with a different definition: replacing [Root bean: class [null]; scope=; abstract=false; lazyInit=false; autowireMode=3; dependencyCheck=0; autowireCandidate=true; primary=false; factoryBeanName=org.springframework.cloud.netflix.zuul.ZuulServerAutoConfiguration$ZuulMetricsConfiguration; factoryMethodName=counterFactory; initMethodName=null; destroyMethodName=(inferred); defined in class path resource [org/springframework/cloud/netflix/zuul/ZuulServerAutoConfiguration$ZuulMetricsConfiguration.class]] with [Root bean: class [null]; scope=; abstract=false; lazyInit=false; autowireMode=3; dependencyCheck=0; autowireCandidate=true; primary=false; factoryBeanName=org.springframework.cloud.netflix.zuul.ZuulServerAutoConfiguration$ZuulCounterFactoryConfiguration; factoryMethodName=counterFactory; initMethodName=null; destroyMethodName=(inferred); defined in class path resource [org/springframework/cloud/netflix/zuul/ZuulServerAutoConfiguration$ZuulCounterFactoryConfiguration.class]]
+[33mproxy    |[0m 2019-03-07 19:37:29.850  INFO 1 --- [           main] o.s.cloud.context.scope.GenericScope     : BeanFactory id=535bd30a-7e55-3ced-a67c-7332ec1f9a44
+[33mproxy    |[0m 2019-03-07 19:37:29.873  INFO 1 --- [           main] f.a.AutowiredAnnotationBeanPostProcessor : JSR-330 'javax.inject.Inject' annotation found and supported for autowiring
+[33mproxy    |[0m 2019-03-07 19:37:30.262  INFO 1 --- [           main] trationDelegate$BeanPostProcessorChecker : Bean 'org.springframework.cloud.autoconfigure.ConfigurationPropertiesRebinderAutoConfiguration' of type [org.springframework.cloud.autoconfigure.ConfigurationPropertiesRebinderAutoConfiguration$$EnhancerBySpringCGLIB$$9cc787e7] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+[36mredis    |[0m 1:C 07 Mar 2019 19:36:50.225 # oO0OoO0OoO0Oo Redis is starting oO0OoO0OoO0Oo
+[36mredis    |[0m 1:C 07 Mar 2019 19:36:50.225 # Redis version=5.0.3, bits=64, commit=00000000, modified=0, pid=1, just started
+[36mredis    |[0m 1:C 07 Mar 2019 19:36:50.225 # Warning: no config file specified, using the default config. In order to specify a config file use redis-server /path/to/redis.conf
+[36mredis    |[0m 1:M 07 Mar 2019 19:36:50.225 * Increased maximum number of open files to 10032 (it was originally set to 1024).
+[36mredis    |[0m 1:M 07 Mar 2019 19:36:50.226 * Running mode=standalone, port=6379.
+[36mredis    |[0m 1:M 07 Mar 2019 19:36:50.226 # WARNING: The TCP backlog setting of 511 cannot be enforced because /proc/sys/net/core/somaxconn is set to the lower value of 128.
+[36mredis    |[0m 1:M 07 Mar 2019 19:36:50.226 # Server initialized
+[36mredis    |[0m 1:M 07 Mar 2019 19:36:50.226 # WARNING overcommit_memory is set to 0! Background save may fail under low memory condition. To fix this issue add 'vm.overcommit_memory = 1' to /etc/sysctl.conf and then reboot or run the command 'sysctl vm.overcommit_memory=1' for this to take effect.
+[36mredis    |[0m 1:M 07 Mar 2019 19:36:50.226 # WARNING you have Transparent Huge Pages (THP) support enabled in your kernel. This will create latency and memory usage issues with Redis. To fix this issue run the command 'echo never > /sys/kernel/mm/transparent_hugepage/enabled' as root, and add it to your /etc/rc.local in order to retain the setting after a reboot. Redis must be restarted after THP is disabled.
+[36mredis    |[0m 1:M 07 Mar 2019 19:36:50.226 * Ready to accept connections
+[32mweb      |[0m 
+[32mweb      |[0m > roam@0.0.0 start /usr/src/app
+[32mweb      |[0m > grunt server:dev
+[32mweb      |[0m 
+[33mproxy    |[0m 2019-03-07 19:37:30.985  INFO 1 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port(s): 443 (https) 80 (http)
+[33mproxy    |[0m 2019-03-07 19:37:31.029  INFO 1 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+[33mproxy    |[0m 2019-03-07 19:37:31.030  INFO 1 --- [           main] org.apache.catalina.core.StandardEngine  : Starting Servlet Engine: Apache Tomcat/8.5.35
+[33mproxy    |[0m 2019-03-07 19:37:31.040  INFO 1 --- [ost-startStop-1] o.a.catalina.core.AprLifecycleListener   : The APR based Apache Tomcat Native library which allows optimal performance in production environments was not found on the java.library.path: [/usr/lib/jvm/java-1.8-openjdk/jre/lib/amd64/server:/usr/lib/jvm/java-1.8-openjdk/jre/lib/amd64:/usr/lib/jvm/java-1.8-openjdk/jre/../lib/amd64:/usr/java/packages/lib/amd64:/usr/lib64:/lib64:/lib:/usr/lib]
+[33mproxy    |[0m 2019-03-07 19:37:31.157  INFO 1 --- [ost-startStop-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+[33mproxy    |[0m 2019-03-07 19:37:31.157  INFO 1 --- [ost-startStop-1] o.s.web.context.ContextLoader            : Root WebApplicationContext: initialization completed in 2353 ms
+[33mproxy    |[0m 2019-03-07 19:37:31.420  WARN 1 --- [ost-startStop-1] c.n.c.sources.URLConfigurationSource     : No URLs will be polled as dynamic configuration sources.
+[33mproxy    |[0m 2019-03-07 19:37:31.420  INFO 1 --- [ost-startStop-1] c.n.c.sources.URLConfigurationSource     : To enable URLs as dynamic configuration sources, define System property archaius.configurationSource.additionalUrls or make config.properties available on classpath.
+[33mproxy    |[0m 2019-03-07 19:37:31.442  INFO 1 --- [ost-startStop-1] c.netflix.config.DynamicPropertyFactory  : DynamicPropertyFactory is initialized with configuration sources: com.netflix.config.ConcurrentCompositeConfiguration@49dd7b2c
+[33mproxy    |[0m 2019-03-07 19:37:32.515  INFO 1 --- [ost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'characterEncodingFilter' to: [/*]
+[33mproxy    |[0m 2019-03-07 19:37:32.516  INFO 1 --- [ost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'webMvcMetricsFilter' to: [/*]
+[33mproxy    |[0m 2019-03-07 19:37:32.516  INFO 1 --- [ost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'hiddenHttpMethodFilter' to: [/*]
+[33mproxy    |[0m 2019-03-07 19:37:32.516  INFO 1 --- [ost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'httpPutFormContentFilter' to: [/*]
+[33mproxy    |[0m 2019-03-07 19:37:32.516  INFO 1 --- [ost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'requestContextFilter' to: [/*]
+[33mproxy    |[0m 2019-03-07 19:37:32.516  INFO 1 --- [ost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'httpTraceFilter' to: [/*]
+[33mproxy    |[0m 2019-03-07 19:37:32.516  INFO 1 --- [ost-startStop-1] o.s.b.w.servlet.ServletRegistrationBean  : Servlet dispatcherServlet mapped to [/]
+[33mproxy    |[0m 2019-03-07 19:37:32.518  INFO 1 --- [ost-startStop-1] o.s.b.w.servlet.ServletRegistrationBean  : Servlet zuulServlet mapped to [/zuul/*]
+[33mproxy    |[0m 2019-03-07 19:37:32.861  WARN 1 --- [           main] o.s.c.n.a.ArchaiusAutoConfiguration      : No spring.application.name found, defaulting to 'application'
+[33mproxy    |[0m 2019-03-07 19:37:32.862  WARN 1 --- [           main] c.n.c.sources.URLConfigurationSource     : No URLs will be polled as dynamic configuration sources.
+[33mproxy    |[0m 2019-03-07 19:37:32.862  INFO 1 --- [           main] c.n.c.sources.URLConfigurationSource     : To enable URLs as dynamic configuration sources, define System property archaius.configurationSource.additionalUrls or make config.properties available on classpath.
+[33mproxy    |[0m 2019-03-07 19:37:32.965  INFO 1 --- [           main] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped URL path [/**/favicon.ico] onto handler of type [class org.springframework.web.servlet.resource.ResourceHttpRequestHandler]
+[32mweb      |[0m Running "server:dev" (server) task
+[32mweb      |[0m 
+[32mweb      |[0m Running "clean:dist" (clean) task
+[32mweb      |[0m >> 2 paths cleaned.
+[32mweb      |[0m 
+[32mweb      |[0m Running "htmlhint:dev" (htmlhint) task
+[32mweb      |[0m >> 4 files lint free.
+[32mweb      |[0m 
+[32mweb      |[0m Running "jsbeautifier:dev" (jsbeautifier) task
+[33mproxy    |[0m 2019-03-07 19:37:33.313  INFO 1 --- [           main] s.w.s.m.m.a.RequestMappingHandlerAdapter : Looking for @ControllerAdvice: org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext@27a8c74e: startup date [Thu Mar 07 19:37:28 GMT 2019]; parent: org.springframework.context.annotation.AnnotationConfigApplicationContext@47fd17e3
+[33mproxy    |[0m 2019-03-07 19:37:33.419  INFO 1 --- [           main] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/oxpd/launch],methods=[POST],produces=[text/html]}" onto public java.lang.String com.hp.ipg.roam.roamembedded.controllers.OxpdController.postOxpd(org.springframework.http.HttpEntity<java.lang.String>,javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse) throws java.io.IOException
+[33mproxy    |[0m 2019-03-07 19:37:33.420  INFO 1 --- [           main] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/oxpd/badge],methods=[DELETE]}" onto public org.springframework.http.ResponseEntity<java.lang.String> com.hp.ipg.roam.roamembedded.controllers.OxpdController.deleteCardData(javax.servlet.http.HttpServletRequest) throws javax.xml.parsers.ParserConfigurationException,org.xml.sax.SAXException,java.io.IOException,javax.xml.xpath.XPathExpressionException
+[33mproxy    |[0m 2019-03-07 19:37:33.421  INFO 1 --- [           main] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/oxpd/badge],methods=[GET]}" onto public org.springframework.http.ResponseEntity<com.hp.ipg.roam.roamembedded.helpers.CardIdResponse> com.hp.ipg.roam.roamembedded.controllers.OxpdController.getBadgeData(javax.servlet.http.HttpServletRequest)
+[33mproxy    |[0m 2019-03-07 19:37:33.422  INFO 1 --- [           main] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/oxpd/badge],methods=[POST]}" onto public org.springframework.http.ResponseEntity<java.lang.String> com.hp.ipg.roam.roamembedded.controllers.OxpdController.setBadgeData(javax.servlet.http.HttpServletRequest) throws javax.xml.parsers.ParserConfigurationException,org.xml.sax.SAXException,java.io.IOException,javax.xml.xpath.XPathExpressionException
+[33mproxy    |[0m 2019-03-07 19:37:33.424  INFO 1 --- [           main] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/error],produces=[text/html]}" onto public org.springframework.web.servlet.ModelAndView org.springframework.boot.autoconfigure.web.servlet.error.BasicErrorController.errorHtml(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)
+[33mproxy    |[0m 2019-03-07 19:37:33.425  INFO 1 --- [           main] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/error]}" onto public org.springframework.http.ResponseEntity<java.util.Map<java.lang.String, java.lang.Object>> org.springframework.boot.autoconfigure.web.servlet.error.BasicErrorController.error(javax.servlet.http.HttpServletRequest)
+[33mproxy    |[0m 2019-03-07 19:37:33.471  INFO 1 --- [           main] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped URL path [/webjars/**] onto handler of type [class org.springframework.web.servlet.resource.ResourceHttpRequestHandler]
+[33mproxy    |[0m 2019-03-07 19:37:33.472  INFO 1 --- [           main] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped URL path [/**] onto handler of type [class org.springframework.web.servlet.resource.ResourceHttpRequestHandler]
+[32mweb      |[0m Beautified 46 files, changed 0 files...OK
+[32mweb      |[0m 
+[32mweb      |[0m Running "jshint:dev" (jshint) task
+[32mweb      |[0m 
+[32mweb      |[0m ✔ No problems
+[32mweb      |[0m 
+[32mweb      |[0m 
+[32mweb      |[0m Running "sortJSON:src" (sortJSON) task
+[32mweb      |[0m File sorted: src/assets/i18n/i18n.json
+[32mweb      |[0m 
+[32mweb      |[0m Running "express:dev" (express) task
+[32mweb      |[0m Starting background Express server
+[32mweb      |[0m Express server listening on port 9000
+[32mweb      |[0m 
+[32mweb      |[0m Running "watch:dev" (watch) task
+[32mweb      |[0m Waiting...
+[33mproxy    |[0m 2019-03-07 19:37:34.928  INFO 1 --- [           main] o.s.c.n.zuul.ZuulFilterInitializer       : Starting filter initializer
+[33mproxy    |[0m 2019-03-07 19:37:34.971  INFO 1 --- [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 2 endpoint(s) beneath base path '/actuator'
+[33mproxy    |[0m 2019-03-07 19:37:34.985  INFO 1 --- [           main] s.b.a.e.w.s.WebMvcEndpointHandlerMapping : Mapped "{[/actuator/health],methods=[GET],produces=[application/vnd.spring-boot.actuator.v2+json || application/json]}" onto public java.lang.Object org.springframework.boot.actuate.endpoint.web.servlet.AbstractWebMvcEndpointHandlerMapping$OperationHandler.handle(javax.servlet.http.HttpServletRequest,java.util.Map<java.lang.String, java.lang.String>)
+[33mproxy    |[0m 2019-03-07 19:37:34.986  INFO 1 --- [           main] s.b.a.e.w.s.WebMvcEndpointHandlerMapping : Mapped "{[/actuator/info],methods=[GET],produces=[application/vnd.spring-boot.actuator.v2+json || application/json]}" onto public java.lang.Object org.springframework.boot.actuate.endpoint.web.servlet.AbstractWebMvcEndpointHandlerMapping$OperationHandler.handle(javax.servlet.http.HttpServletRequest,java.util.Map<java.lang.String, java.lang.String>)
+[33mproxy    |[0m 2019-03-07 19:37:34.987  INFO 1 --- [           main] s.b.a.e.w.s.WebMvcEndpointHandlerMapping : Mapped "{[/actuator],methods=[GET],produces=[application/vnd.spring-boot.actuator.v2+json || application/json]}" onto protected java.util.Map<java.lang.String, java.util.Map<java.lang.String, org.springframework.boot.actuate.endpoint.web.Link>> org.springframework.boot.actuate.endpoint.web.servlet.WebMvcEndpointHandlerMapping.links(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)
+[33mproxy    |[0m 2019-03-07 19:37:35.062  INFO 1 --- [           main] o.s.j.e.a.AnnotationMBeanExporter        : Registering beans for JMX exposure on startup
+[33mproxy    |[0m 2019-03-07 19:37:35.073  INFO 1 --- [           main] o.s.j.e.a.AnnotationMBeanExporter        : Bean with name 'environmentManager' has been autodetected for JMX exposure
+[33mproxy    |[0m 2019-03-07 19:37:35.074  INFO 1 --- [           main] o.s.j.e.a.AnnotationMBeanExporter        : Bean with name 'refreshScope' has been autodetected for JMX exposure
+[33mproxy    |[0m 2019-03-07 19:37:35.076  INFO 1 --- [           main] o.s.j.e.a.AnnotationMBeanExporter        : Bean with name 'configurationPropertiesRebinder' has been autodetected for JMX exposure
+[33mproxy    |[0m 2019-03-07 19:37:35.079  INFO 1 --- [           main] o.s.j.e.a.AnnotationMBeanExporter        : Located managed bean 'environmentManager': registering with JMX server as MBean [org.springframework.cloud.context.environment:name=environmentManager,type=EnvironmentManager]
+[33mproxy    |[0m 2019-03-07 19:37:35.090  INFO 1 --- [           main] o.s.j.e.a.AnnotationMBeanExporter        : Located managed bean 'refreshScope': registering with JMX server as MBean [org.springframework.cloud.context.scope.refresh:name=refreshScope,type=RefreshScope]
+[33mproxy    |[0m 2019-03-07 19:37:35.102  INFO 1 --- [           main] o.s.j.e.a.AnnotationMBeanExporter        : Located managed bean 'configurationPropertiesRebinder': registering with JMX server as MBean [org.springframework.cloud.context.properties:name=configurationPropertiesRebinder,context=27a8c74e,type=ConfigurationPropertiesRebinder]
+[33mproxy    |[0m 2019-03-07 19:37:36.238  INFO 1 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 443 (https) 80 (http) with context path ''
+[33mproxy    |[0m 2019-03-07 19:37:36.242  INFO 1 --- [           main] c.h.i.r.r.RoamGatewayApplication         : Started RoamGatewayApplication in 8.586 seconds (JVM running for 9.451)
