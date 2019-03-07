@@ -1,0 +1,47 @@
+# HOW TO POINT TO A NEW PSIM INSTANCE:
+# change the PSIM_HOST to your CPS ip.
+# change the deviceSerialNumber default in config.service.js (roam-embedded)
+# then run ./up when in the OxpdEnvironment folder.
+
+version: '3.0'
+
+services:
+
+  # roam node web app
+  web:
+    container_name: web
+    image: local/oxpd-web
+    networks:
+      - backend
+
+  # roam embedded proxy
+  proxy:
+    container_name: proxy
+    image: local/oxpd-proxy
+    depends_on:
+      - redis
+    environment:
+      SPRING_PROFILES_ACTIVE: pon-local
+      REDIS_HOST: redis
+      WEB_IP: web
+      WEB_PORT: 9000
+      CPS_URL: https://18.232.95.16/
+      PDH_URL: http://18.232.95.16:631/
+      CPS_BASIC_TOKEN: NzVjODllMjAtNTliNy00ZDAxLTg5OTEtZGUxYWU3NDU5Yjc4OjdjNjdkM2Y3LTk0NDctNDliNC1iYThjLWVlMjhkNjQxYjE3Yw==
+      SSL_HOSTNAME_ENABLED: "false"
+    networks:
+      - backend
+    ports:
+      - 8080:80/tcp
+      - 8443:443/tcp
+
+  # data service
+  redis:
+    container_name: redis
+    image: redis
+    networks:
+      - backend
+
+# private network
+networks:
+  backend: {}
